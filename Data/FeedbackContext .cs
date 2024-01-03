@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using feedback.Models;
 
 namespace feedback.Data
@@ -12,6 +12,7 @@ namespace feedback.Data
         public DbSet<Chestionar> Chestionare { get; set; }
         public DbSet<Intrebare> Intrebari { get; set; }
         public DbSet<UserResponse> UserResponse { get; set; }
+        public DbSet<Multiple> IntrebariMultiple { get; set; }
 
         // Alte setări și configurări ale contextului
     }
