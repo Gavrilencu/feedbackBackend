@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -19,7 +19,11 @@ namespace feedback.Migrations
                     QuestionId = table.Column<int>(type: "INTEGER", nullable: false),
                     IdChestionar = table.Column<int>(type: "INTEGER", nullable: false),
                     Raspuns = table.Column<string>(type: "TEXT", nullable: false),
-                    NumePersoana = table.Column<string>(type: "TEXT", nullable: false)
+                    FromPerson = table.Column<string>(type: "TEXT", nullable: false),
+                    ForPerson = table.Column<string>(type: "TEXT", nullable: false),
+                    EncodedName = table.Column<string>(type: "TEXT", nullable: false),
+                    PostDate = table.Column<string>(type: "TEXT", nullable: true)
+                    // Added this line
                 },
                 constraints: table =>
                 {
