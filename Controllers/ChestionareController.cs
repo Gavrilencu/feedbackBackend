@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using feedback.Data;
 using feedback.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace feedback.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("/feedback/api/[controller]")]
     public class ChestionareController : ControllerBase
     {
         private readonly FeedbackContext _context;
@@ -33,7 +33,6 @@ namespace feedback.Controllers
 
             return Ok(new { Message = "Chestionar creat cu succes." });
         }
-
         [HttpPut("{id}")]
         public async Task<ActionResult> EditChestionar(int id, [FromBody] ChestionarEditRequest request)
         {
@@ -42,7 +41,6 @@ namespace feedback.Controllers
             {
                 return NotFound(new { Message = "Chestionarul nu a fost găsit." });
             }
-
             if (chestionar.CreatorId != request.Username)
             {
                 return new ObjectResult(new { Message = "Nu aveți permisiunea de a modifica acest chestionar." }) { StatusCode = 403 };
@@ -80,29 +78,59 @@ namespace feedback.Controllers
         public async Task<ActionResult<IEnumerable<Chestionar>>> GetAllChestionare()
         {
             var chestionare = await _context.Chestionare.ToListAsync();
-            return Ok(chestionare.Select(c => new { c.Id, c.Nume, c.CreatorId,c.Tip }));
+            return Ok(chestionare.Select(c => new { c.Id, c.Nume, c.CreatorId, c.Tip }));
+        }
+        [HttpGet("excluding-feedback")]
+        public async Task<ActionResult<IEnumerable<Chestionar>>> GetAllChestionareExcludingFeedback()
+        {
+            var chestionare = await _context.Chestionare
+                .Where(c => c.Tip != "feedback") // Excludem chestionarele de tip feedback
+                .ToListAsync();
+
+            if (!chestionare.Any())
+            {
+                return NotFound(new { Message = "Nu există chestionare în afara celor de tip feedback." });
+            }
+
+            return Ok(chestionare.Select(c => new { c.Id, c.Nume, c.CreatorId, c.Tip }));
+        }
+
+
+        [HttpGet("feedback-only")]
+        public async Task<ActionResult<IEnumerable<Chestionar>>> GetFeedbackChestionare()
+        {
+            var chestionareFeedback = await _context.Chestionare
+                .Where(c => c.Tip == "feedback") // Selectăm doar chestionarele de tip feedback
+                .ToListAsync();
+
+            if (!chestionareFeedback.Any())
+            {
+                return NotFound(new { Message = "Nu există chestionare de tip feedback." });
+            }
+
+            return Ok(chestionareFeedback.Select(c => new { c.Id, c.Nume, c.CreatorId, c.Tip }));
         }
     }
 
     public class ChestionarCreateRequest
     {
-        public string Nume { get; set; }
-        public string Username { get; set; }
-        public string Tip { get; set; }
+        public string? Nume { get; set; }
+        public string? Username { get; set; }
+        public string? Tip { get; set; }
 
     }
 
     public class ChestionarEditRequest
     {
-        public string Nume { get; set; }
-        public string Username { get; set; }
-        public string Tip { get; set; }
+        public string? Nume { get; set; }
+        public string? Username { get; set; }
+        public string? Tip { get; set; }
 
     }
 
 
     public class ChestionarDeleteRequest
     {
-        public string Username { get; set; }
+        public string? Username { get; set; }
     }
 }
